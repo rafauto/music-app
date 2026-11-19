@@ -1,0 +1,23 @@
+# --- Secrets ---
+.env
+.env.*
+
+# --- Java build output ---
+out/
+bin/
+build/
+target/
+*.class
+*.jar
+
+# --- Editors / IDEs ---
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# --- OS ---
+.DS_Store
+Thumbs.db

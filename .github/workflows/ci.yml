@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: ["17", "21"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Compile
+        run: javac -encoding UTF-8 -Xlint:none -d out src/TrabalhoFinal/*.java
+
+      - name: Smoke test (scripted input)
+        run: |
+          printf '1\nMusica3\nCantor3\n2\n2\n' | java -cp out TrabalhoFinal.Principal | tee output.txt
+          grep -q "Musica3 tocada por Cantor3 foi adicionado com sucesso" output.txt
