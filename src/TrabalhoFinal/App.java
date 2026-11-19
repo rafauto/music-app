@@ -28,6 +28,11 @@ public class App implements Tela {
         this.musAtual = 0;
         this.ligado = false;
         this.tocando = false;
+
+        //Adiciona músicas pré-definidas da playlist (uma única vez):
+        musicas.add(m0);
+        musicas.add(m1);
+        musicas.add(m2);
     }
 
 // -------------------- Métodos especiais --------------------
@@ -74,17 +79,15 @@ public class App implements Tela {
         for(int i=0; i<=this.getVolume(); i+=10) {
             System.out.printf("|");     //Exibe barrinhas que representam volume
         }
-        System.out.println("\nEsta tocando: "+m0.getNome()+" - "+m0.getCantor());
-
-        //Adiciona músicas pré-definidas da playlist:
-        musicas.add(m0);
-        musicas.add(m1);
-        musicas.add(m2);
+        if(!musicas.isEmpty()) {
+            Musica atual = musicas.get(this.getMusAtual());
+            System.out.println("\nEsta tocando: "+atual.getNome()+" - "+atual.getCantor());
+        }
 
         //Exibe músicas da playlist:
         System.out.println("\nMúsicas da playlist:");
         for(int m=0; m<musicas.size(); m++) {
-            System.out.println(m+": "+musicas.get(m).getNome()+" cantata por "+musicas.get(m).getCantor());
+            System.out.println(m+": "+musicas.get(m).getNome()+" cantada por "+musicas.get(m).getCantor());
         }
         
         totMusicas();     //Exibe quantidade de músicas pré-definidas na playlist:
@@ -96,13 +99,13 @@ public class App implements Tela {
     @Override
     public void aumentaVol() {
         if(this.isLigado()) {
-            this.setVolume(this.getVolume()+5);
+            this.setVolume(Math.min(100, this.getVolume()+5));     //Volume máximo: 100
         }
     }
     @Override
     public void diminuiVol() {
         if(this.isLigado()) {
-            this.setVolume(this.getVolume()-5);
+            this.setVolume(Math.max(0, this.getVolume()-5));     //Volume mínimo: 0
         }
     }
     @Override
@@ -160,22 +163,19 @@ public class App implements Tela {
         eMusica = ler.nextLine();
         
         if(exclui==1){
-            String retorna = null;
-
             System.out.printf("Digite o nome da música ou cantor/banda a ser excluida: ");
             eMusica = ler.nextLine();
 
-            for(int e=0; e<musicas.size(); e++) {
-                Musica m = musicas.get(e);
-                if(m.getNome().equals(eMusica) || m.getCantor().equals(eMusica)) {
-                    musicas.remove(m);
-                    retorna = eMusica+" foi excluido com sucesso!";
+            Musica encontrada = procurar(eMusica);
+            if(encontrada != null) {
+                musicas.remove(encontrada);
+                if(this.getMusAtual() >= musicas.size()) {
+                    this.setMusAtual(0);     //Evita apontar para uma música que não existe mais
                 }
-                else {
-                    retorna = eMusica+" não foi encontrada na playlist";
-                }
+                System.out.println(eMusica+" foi excluido com sucesso!");
+            } else {
+                System.out.println(eMusica+" não foi encontrada na playlist");
             }
-            System.out.println(retorna);
 
         //Finaliza processo de excluir música:
         }else{
@@ -197,17 +197,21 @@ public class App implements Tela {
     }
     @Override
     public void avancar() {
-        this.musAtual++;
+        if(!musicas.isEmpty()) {
+            this.setMusAtual((this.getMusAtual()+1) % musicas.size());     //Volta ao início no fim da playlist
+        }
     }
     @Override
     public void voltar() {
-        this.musAtual--;
+        if(!musicas.isEmpty()) {
+            this.setMusAtual((this.getMusAtual()-1+musicas.size()) % musicas.size());     //Vai para o fim se estiver no início
+        }
     }
     @Override
     public void aleatorio() {
         Collections.shuffle(musicas);
         for (int i=0; i<musicas.size(); i++){
-            System.out.println(musicas);
+            System.out.println(i+": "+musicas.get(i).getNome()+" - "+musicas.get(i).getCantor());
         }
     }
     @Override
@@ -229,22 +233,16 @@ public class App implements Tela {
         //Pesquisa o nome da música ou cantor/banda na playlist:
         n = ler.nextLine();
         if(op==1){
-            String retorna = null;
-
             System.out.printf("Digite o nome da música ou cantor/banda que deseja pesquisar: ");
             n = ler.nextLine();
 
-            for(int b=0; b<musicas.size(); b++) {
-                Musica m = musicas.get(b);
-                if(m.getNome().equals(n) || m.getCantor().equals(n)) {
-                    musicas.remove(m);
-                    retorna = n+" foi encontrado na playlist";
-                }
-                else {
-                    retorna = n+" não foi encontrada na playlist";
-                }
+            //A busca apenas consulta a playlist, sem remover nada:
+            Musica encontrada = procurar(n);
+            if(encontrada != null) {
+                System.out.println(n+" foi encontrado na playlist: "+encontrada.getNome()+" - "+encontrada.getCantor());
+            } else {
+                System.out.println(n+" não foi encontrada na playlist");
             }
-            System.out.println(retorna);
 
         //Finaliza a busca:
         }else{
@@ -256,6 +254,16 @@ public class App implements Tela {
 // -------------------- Métodos públicos --------------------
     public void totMusicas(){
         System.out.println("Quantidade total de músicas na playlist: "+musicas.size());
+    }
+
+    //Retorna a primeira música cujo nome ou cantor/banda seja igual ao texto (sem diferenciar maiúsculas), ou null:
+    public Musica procurar(String texto) {
+        for(Musica m : musicas) {
+            if(m.getNome().equalsIgnoreCase(texto.trim()) || m.getCantor().equalsIgnoreCase(texto.trim())) {
+                return m;
+            }
+        }
+        return null;
     }
 }
 

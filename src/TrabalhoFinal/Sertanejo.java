@@ -5,12 +5,13 @@
 
 package TrabalhoFinal;
 
-//Classe finha:
+//Classe filha:
 public class Sertanejo extends Musica {
 
     public Sertanejo(String nome, String cantor) {
-        super(nome=null, cantor=null);
+        super(nome, cantor);
     }
+    @Override
     public void categoria() {
         System.out.println("Sertanejo");
     }

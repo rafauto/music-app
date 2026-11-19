@@ -23,5 +23,9 @@ jobs:
 
       - name: Smoke test (scripted input)
         run: |
-          printf '1\nMusica3\nCantor3\n2\n2\n' | java -cp out TrabalhoFinal.Principal | tee output.txt
+          printf '1\nMusica3\nCantor3\n1\nCantor1\n1\nmusica0\n' \
+            | java -Dstdout.encoding=UTF-8 -cp out TrabalhoFinal.Principal | tee output.txt
           grep -q "Musica3 tocada por Cantor3 foi adicionado com sucesso" output.txt
+          grep -q "Cantor1 foi excluido com sucesso" output.txt
+          grep -q "musica0 foi encontrado na playlist: Musica0 - Cantor0" output.txt
+          test "$(grep -c 'Quantidade total' output.txt)" -eq 3

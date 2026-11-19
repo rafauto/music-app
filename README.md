@@ -84,22 +84,29 @@ The program asks three questions in order. Answer `1` (yes) or `2` (no), then ty
 Non-interactive run (same input the CI uses):
 
 ```bash
-printf '1\nMusica3\nCantor3\n2\n2\n' | java -cp out TrabalhoFinal.Principal
+printf '1\nMusica3\nCantor3\n1\nCantor1\n1\nmusica0\n' | java -cp out TrabalhoFinal.Principal
 ```
 
 ## Continuous integration
 
-GitHub Actions compiles the project on Java 17 and 21 and runs a smoke test that feeds scripted input to the app.
+GitHub Actions compiles the project on Java 17 and 21 and runs a smoke test that feeds scripted input to the app and checks that add, remove and search print the expected results.
+
+## Changelog
+
+The first commit holds the code exactly as submitted for the course. A follow-up `fix:` commit improved it:
+
+- Search no longer removes the song it finds.
+- Remove reports the right result (it used to say "not found" after a successful removal).
+- Search and remove share one helper, `procurar()`, that ignores letter case and extra spaces.
+- Genre subclasses now keep their name and artist, and `categoria()` is a real override of `Musica` (it was misspelled `cetegoria()`).
+- Sample songs are loaded once, in the constructor, not every time the menu opens.
+- Volume stays between 0 and 100; next/previous wrap around the playlist; shuffle prints each song once.
 
 ## Known limitations
 
-This is the code as submitted for the course; these issues are documented, not fixed:
-
-- **Search removes the song it finds** (`busca()` calls `musicas.remove`).
-- **Remove may report "not found" after a successful removal**, because the result message is overwritten on each loop iteration.
-- Genre subclasses pass `null` to the parent constructor, so a genre object never keeps its name and artist.
-- `abrirMenu()` re-adds the sample songs each time it is called.
-- Volume, next/previous, pause and shuffle are not reachable from the main flow; data is not saved between runs.
+- Volume, next/previous, pause and shuffle are implemented but not reachable from the main flow.
+- The flow is a fixed sequence (add → remove → search), not a menu loop.
+- Data lives in memory only and is not saved between runs.
 
 ## License
 

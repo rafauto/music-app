@@ -8,7 +8,7 @@ package TrabalhoFinal;
 public class Principal {
     //Polimorfismo:
     public void categMusica(Musica musica, Pop pop, Sertanejo sertanejo, Rock rock, MPB mpb, Funk funk) {
-        musica.cetegoria();
+        musica.categoria();
         pop.categoria();
         sertanejo.categoria();
         rock.categoria();

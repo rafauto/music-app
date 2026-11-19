@@ -32,7 +32,7 @@ public class Musica {
         this.cantor = cantor;
     }
 // -------------------- Método público --------------------
-    public void cetegoria() {
+    public void categoria() {
         System.out.println("\n---------- CATEGORIAS MUSICAIS ----------");
     }
 }
